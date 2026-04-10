@@ -28,21 +28,22 @@ import {
 import { Label } from "@/components/ui/label"
 
 const systemUsers = [
-  { id: "USR-001", name: "Mahmoud Ramadan", email: "mahmoud@university.edu", role: "UNIVERSITY_ADMIN", lastLogin: "2 hours ago", status: "Active" },
-  { id: "USR-002", name: "Ahmed Hassan", email: "ahmed@university.edu", role: "FACULTY_ADMIN", lastLogin: "5 hours ago", status: "Active" },
-  { id: "USR-003", name: "Sara Ali", email: "sara@university.edu", role: "DOCTOR_TA", lastLogin: "1 day ago", status: "Active" },
-  { id: "USR-004", name: "System Auditor", email: "auditor@university.edu", role: "UNIVERSITY_ADMIN", lastLogin: "3 days ago", status: "Inactive" },
+  { id: "USR-001", name: "Mahmoud Ramadan Korany", email: "mahmoud.ramadan@university.edu", role: "University Admin", status: "Active", lastLogin: "2 hours ago" },
+  { id: "USR-002", name: "Ahmed Ramadan Korany", email: "ahmed.ramadan@university.edu", role: "Faculty Admin", status: "Active", lastLogin: "5 hours ago" },
+  { id: "USR-003", name: "Sara Ahmed Hassan", email: "sara.hassan@university.edu", role: "Faculty Admin", status: "Active", lastLogin: "1 day ago" },
+  { id: "USR-004", name: "Mohamed Ali Omar", email: "mohamed.omar@university.edu", role: "Doctor / TA", status: "Active", lastLogin: "3 hours ago" },
+  { id: "USR-005", name: "Laila Mahmoud Zaki", email: "laila.mahmoud@university.edu", role: "Doctor / TA", status: "Inactive", lastLogin: "1 week ago" },
 ]
 
 export function SystemUsers() {
   const { t } = useApp()
 
   return (
-    <div className="space-y-8">
-      <div className="flex flex-col gap-4 sm:flex-row sm:items-center sm:justify-between">
+    <div className="space-y-10">
+      <div className="flex flex-col gap-6 sm:flex-row sm:items-center sm:justify-between">
         <div>
-          <h1 className="text-3xl font-black tracking-tight">{t('users')}</h1>
-          <p className="text-muted-foreground font-medium">Manage system access, user roles, and security permissions.</p>
+          <h1 className="text-4xl font-black tracking-tight text-gradient">{t('users')}</h1>
+          <p className="text-muted-foreground font-medium mt-1">Manage system users, access levels, and security permissions.</p>
         </div>
         
         <Dialog>

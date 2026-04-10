@@ -24,9 +24,10 @@ import {
 } from "@/components/ui/select"
 import { Separator } from "@/components/ui/separator"
 import { useApp } from "@/src/context/AppContext"
+import { cn } from "@/lib/utils"
 
 export function Settings() {
-  const { t, language, setLanguage, theme, toggleTheme } = useApp()
+  const { t, language, setLanguage, theme, setTheme, toggleTheme, colorTheme, setColorTheme } = useApp()
 
   return (
     <div className="space-y-10">
@@ -86,17 +87,55 @@ export function Settings() {
               <div className="size-10 rounded-xl bg-primary/10 flex items-center justify-center text-primary">
                 {theme === 'dark' ? <Moon className="size-5" /> : <Sun className="size-5" />}
               </div>
-              Appearance
+              Appearance & Theme
             </CardTitle>
             <CardDescription className="text-base font-medium">Customize how the system looks on your screen.</CardDescription>
           </CardHeader>
-          <CardContent className="p-8 pt-0">
+          <CardContent className="p-8 pt-0 space-y-6">
             <div className="flex items-center justify-between p-6 rounded-2xl bg-secondary/30 border-2 border-transparent hover:border-primary/20 transition-all">
               <div className="space-y-1">
                 <Label className="text-lg font-bold">{t('dark_mode')}</Label>
                 <p className="text-sm text-muted-foreground font-medium">Toggle between light and dark visual themes.</p>
               </div>
-              <Switch checked={theme === 'dark'} onCheckedChange={toggleTheme} className="scale-125" />
+              <div className="flex items-center gap-4">
+                <Sun className={cn("size-5 transition-colors", theme === 'light' ? "text-amber-500" : "text-muted-foreground")} />
+                <Switch 
+                  checked={theme === 'dark'} 
+                  onCheckedChange={(checked) => setTheme(checked ? 'dark' : 'light')} 
+                  className="scale-125" 
+                />
+                <Moon className={cn("size-5 transition-colors", theme === 'dark' ? "text-primary" : "text-muted-foreground")} />
+              </div>
+            </div>
+
+            <div className="p-6 rounded-2xl bg-secondary/30 border-2 border-transparent hover:border-primary/20 transition-all space-y-4">
+              <div className="space-y-1">
+                <Label className="text-lg font-bold">Primary Color Theme</Label>
+                <p className="text-sm text-muted-foreground font-medium">Select the main accent color for the application.</p>
+              </div>
+              <div className="flex flex-wrap gap-4 pt-2">
+                {[
+                  { id: 'indigo', color: 'bg-[#6366f1]', label: 'Indigo' },
+                  { id: 'emerald', color: 'bg-[#10b981]', label: 'Emerald' },
+                  { id: 'rose', color: 'bg-[#f43f5e]', label: 'Rose' },
+                  { id: 'amber', color: 'bg-[#f59e0b]', label: 'Amber' },
+                  { id: 'violet', color: 'bg-[#8b5cf6]', label: 'Violet' },
+                ].map((t) => (
+                  <button
+                    key={t.id}
+                    onClick={() => setColorTheme(t.id as any)}
+                    className={cn(
+                      "flex items-center gap-3 px-4 py-3 rounded-xl border-2 transition-all hover:scale-105 active:scale-95",
+                      colorTheme === t.id 
+                        ? "bg-background border-primary shadow-md" 
+                        : "bg-background/50 border-transparent opacity-70 hover:opacity-100"
+                    )}
+                  >
+                    <div className={cn("size-6 rounded-lg shadow-sm", t.color)} />
+                    <span className="font-bold text-sm">{t.label}</span>
+                  </button>
+                ))}
+              </div>
             </div>
           </CardContent>
         </Card>

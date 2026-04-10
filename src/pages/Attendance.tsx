@@ -22,28 +22,28 @@ export function Attendance() {
       <motion.div 
         initial={{ y: -20, opacity: 0 }}
         animate={{ y: 0, opacity: 1 }}
-        className="flex flex-col gap-2 sm:flex-row sm:items-center sm:justify-between"
+        className="flex flex-col gap-8 sm:flex-row sm:items-center sm:justify-between bg-card/40 backdrop-blur-xl p-10 rounded-[3rem] border border-white/10 shadow-xl"
       >
         <div>
-          <h1 className="text-4xl font-black tracking-tight bg-clip-text text-transparent bg-gradient-to-r from-foreground to-foreground/70">{t('attendance_tracking')}</h1>
+          <h1 className="text-4xl font-black tracking-tight text-gradient">{t('attendance_tracking')}</h1>
           <p className="text-muted-foreground font-medium">{t('manage_attendance')}</p>
         </div>
-        <div className="flex items-center gap-3">
-          <Button variant="outline" className="rounded-xl font-bold uppercase tracking-widest text-xs h-12 px-6">
-            <Download className="me-2 size-4" />
+        <div className="flex items-center gap-4">
+          <Button variant="outline" className="rounded-2xl font-black h-14 px-8 border-2 shadow-sm hover-lift">
+            <Download className="me-2 size-5" />
             Export Logs
           </Button>
           <Button 
             onClick={() => setIsStarted(!isStarted)}
             className={cn(
-              "rounded-xl font-bold uppercase tracking-widest text-xs h-12 px-6 shadow-lg transition-all hover:scale-105 active:scale-95",
+              "rounded-2xl font-black h-14 px-8 shadow-2xl transition-all hover-lift",
               isStarted ? "bg-destructive text-destructive-foreground shadow-destructive/20" : "bg-primary text-primary-foreground shadow-primary/20"
             )}
           >
             {isStarted ? (
-              <><RefreshCw className="me-2 size-4 animate-spin" /> Stop Session</>
+              <><RefreshCw className="me-2 size-5 animate-spin" /> Stop Session</>
             ) : (
-              <><QrCode className="me-2 size-4" /> Start Session</>
+              <><QrCode className="me-2 size-5" /> Start Session</>
             )}
           </Button>
         </div>

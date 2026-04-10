@@ -35,32 +35,32 @@ export function Courses() {
 
   return (
     <div className="space-y-10">
-      <div className="flex flex-col gap-2 sm:flex-row sm:items-center sm:justify-between">
+      <div className="flex flex-col gap-8 sm:flex-row sm:items-center sm:justify-between bg-card/40 backdrop-blur-xl p-10 rounded-[3rem] border border-white/10 shadow-xl">
         <div>
-          <h1 className="text-4xl font-black tracking-tight bg-clip-text text-transparent bg-gradient-to-r from-foreground to-foreground/70">{t('courses')}</h1>
+          <h1 className="text-4xl font-black tracking-tight text-gradient">{t('courses')}</h1>
           <p className="text-muted-foreground font-medium">Manage and view all your academic courses.</p>
         </div>
-        <Button className="rounded-xl font-bold uppercase tracking-widest text-xs h-12 px-6 shadow-lg shadow-primary/20 transition-all hover:scale-105 active:scale-95">
-          <Plus className="me-2 size-4" />
+        <Button className="rounded-2xl font-black h-14 px-8 shadow-2xl shadow-primary/20 hover-lift">
+          <Plus className="me-2 size-5" />
           Add Course
         </Button>
       </div>
 
       <div className="grid gap-8 md:grid-cols-2 lg:grid-cols-3">
         {courseList.map((course) => (
-          <Card key={course.id} className="group border-none shadow-md hover:shadow-2xl transition-all duration-500 overflow-hidden rounded-[2rem]">
+          <Card key={course.id} className="group border-none shadow-xl hover:shadow-2xl transition-all duration-500 overflow-hidden rounded-[3rem] bg-card/40 backdrop-blur-xl border border-white/10">
             <div className="h-32 bg-gradient-to-br from-primary to-primary/60 relative">
-              <div className="absolute inset-0 bg-[radial-gradient(circle_at_top_right,rgba(255,255,255,0.2),transparent)]" />
-              <div className="absolute top-4 end-4">
-                <Badge className="bg-white/20 backdrop-blur-md border-white/20 text-white font-bold rounded-lg">{course.status}</Badge>
+              <div className="absolute inset-0 bg-[radial-gradient(circle_at_top_right,rgba(255,255,255,0.3),transparent)]" />
+              <div className="absolute top-6 end-6">
+                <Badge className="bg-white/20 backdrop-blur-md border-white/20 text-white font-black rounded-xl px-4 py-1 uppercase tracking-widest text-[10px]">{course.status}</Badge>
               </div>
             </div>
             <CardHeader className="relative -mt-12 pt-0 px-8">
-              <div className="size-20 rounded-[2rem] bg-card shadow-2xl border-4 border-background flex items-center justify-center mb-6 group-hover:scale-110 transition-transform duration-500">
+              <div className="size-20 rounded-[2rem] bg-card shadow-2xl border-4 border-background flex items-center justify-center mb-6 group-hover:scale-110 group-hover:rotate-3 transition-all duration-500 shadow-primary/10">
                 <BookOpen className="size-10 text-primary" />
               </div>
-              <CardTitle className="text-2xl font-black group-hover:text-primary transition-colors">{course.name}</CardTitle>
-              <CardDescription className="font-bold text-primary/70 text-base">{course.dept}</CardDescription>
+              <CardTitle className="text-2xl font-black group-hover:text-primary transition-colors tracking-tight">{course.name}</CardTitle>
+              <CardDescription className="font-black text-primary/70 text-sm uppercase tracking-widest">{course.dept}</CardDescription>
             </CardHeader>
             <CardContent className="px-8 pb-8">
               <div className="flex items-center gap-6 text-sm text-muted-foreground font-bold">
@@ -78,7 +78,7 @@ export function Courses() {
                   to={`/courses/${course.id}`} 
                   className={cn(
                     buttonVariants({ variant: "outline" }), 
-                    "w-full h-12 justify-between rounded-xl border-2 font-bold uppercase tracking-widest text-[10px] group-hover:bg-primary group-hover:text-primary-foreground group-hover:border-primary transition-all duration-300"
+                    "w-full h-14 justify-between rounded-2xl border-2 font-black uppercase tracking-widest text-[10px] group-hover:bg-primary group-hover:text-primary-foreground group-hover:border-primary transition-all duration-300 shadow-sm"
                   )}
                 >
                   View Details

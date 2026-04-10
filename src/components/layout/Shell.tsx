@@ -66,16 +66,16 @@ export function Sidebar({ isOpen, setIsOpen }: SidebarProps) {
 
   return (
     <aside className={cn(
-      "fixed top-0 z-50 h-screen w-72 border-e bg-card shadow-2xl transition-all duration-500 ease-in-out lg:translate-x-0",
+      "fixed top-0 z-50 h-screen w-72 border-e bg-card/80 backdrop-blur-2xl shadow-2xl transition-all duration-500 ease-in-out lg:translate-x-0 border-white/10",
       language === 'ar' ? "right-0" : "left-0",
       !isOpen && (language === 'ar' ? "translate-x-full" : "-translate-x-full")
     )}>
-      <div className="flex h-24 items-center border-b px-8">
+      <div className="flex h-24 items-center border-b border-white/10 px-8 bg-gradient-to-b from-primary/5 to-transparent">
         <Link to="/" className="flex items-center gap-4 font-black text-2xl tracking-tighter hover:opacity-80 transition-all active:scale-95">
-          <div className="size-12 rounded-2xl bg-primary flex items-center justify-center text-primary-foreground shadow-xl shadow-primary/30 rotate-3 hover:rotate-0 transition-transform">
+          <div className="size-12 rounded-2xl bg-gradient-primary flex items-center justify-center text-primary-foreground shadow-xl shadow-primary/30 rotate-3 hover:rotate-0 transition-transform">
             <School className="size-7" />
           </div>
-          <span className="bg-clip-text text-transparent bg-gradient-to-br from-foreground via-foreground to-foreground/50">UniManage</span>
+          <span className="text-gradient">UniManage</span>
         </Link>
       </div>
       
@@ -87,7 +87,7 @@ export function Sidebar({ isOpen, setIsOpen }: SidebarProps) {
           return (
             <motion.div
               key={item.href}
-              initial={{ x: -20, opacity: 0 }}
+              initial={{ x: language === 'ar' ? 20 : -20, opacity: 0 }}
               animate={{ x: 0, opacity: 1 }}
               transition={{ delay: idx * 0.05 }}
             >
@@ -100,19 +100,19 @@ export function Sidebar({ isOpen, setIsOpen }: SidebarProps) {
                   "group flex items-center gap-4 rounded-2xl px-5 py-4 text-sm font-bold transition-all duration-300 relative overflow-hidden",
                   isActive 
                     ? "bg-primary text-primary-foreground shadow-xl shadow-primary/20" 
-                    : "text-muted-foreground hover:bg-secondary hover:text-foreground"
+                    : "text-muted-foreground hover:bg-primary/5 hover:text-primary"
                 )}
               >
                 <Icon className={cn(
                   "size-5 transition-transform group-hover:scale-125 duration-300", 
-                  isActive ? "text-primary-foreground" : "text-muted-foreground/60",
+                  isActive ? "text-primary-foreground" : "text-muted-foreground/60 group-hover:text-primary",
                   language === 'ar' && ["ChevronRight", "ArrowLeft"].includes(item.icon) && "rotate-180"
                 )} />
                 <span className="relative z-10">{t(item.title)}</span>
                 {isActive && (
                   <motion.div 
                     layoutId="active-pill"
-                    className="absolute inset-0 bg-gradient-to-r from-white/10 to-transparent"
+                    className="absolute inset-0 bg-gradient-to-r from-white/20 to-transparent"
                   />
                 )}
               </Link>
@@ -121,16 +121,16 @@ export function Sidebar({ isOpen, setIsOpen }: SidebarProps) {
         })}
       </nav>
 
-      <div className="absolute bottom-0 w-full p-6">
+      <div className="absolute bottom-0 w-full p-6 bg-gradient-to-t from-primary/5 to-transparent">
         <DropdownMenu>
           <DropdownMenuTrigger asChild>
-            <Button variant="ghost" className="w-full justify-start gap-4 px-4 h-20 rounded-[2rem] bg-secondary/30 border-2 border-transparent hover:border-primary/20 hover:bg-secondary/50 transition-all shadow-inner">
-              <Avatar className="size-12 border-4 border-background shadow-xl">
-                <AvatarFallback className="bg-primary text-primary-foreground font-black text-lg">MR</AvatarFallback>
+            <Button variant="ghost" className="w-full justify-start gap-4 px-4 h-20 rounded-[2rem] bg-secondary/50 border-2 border-white/10 hover:border-primary/20 hover:bg-primary/5 transition-all shadow-xl group">
+              <Avatar className="size-12 border-4 border-background shadow-xl group-hover:scale-110 transition-transform">
+                <AvatarFallback className="bg-gradient-primary text-primary-foreground font-black text-lg">MR</AvatarFallback>
               </Avatar>
               <div className="flex flex-col items-start text-xs overflow-hidden">
-                <span className="font-black text-sm truncate w-full">Mahmoud Ramadan</span>
-                <span className="text-primary font-black uppercase tracking-widest text-[10px] truncate w-full">{role.replace('_', ' ')}</span>
+                <span className="font-black text-sm truncate w-full group-hover:text-primary transition-colors">Mahmoud Ramadan</span>
+                <span className="text-primary font-black uppercase tracking-widest text-[10px] truncate w-full opacity-70">{role.replace('_', ' ')}</span>
               </div>
             </Button>
           </DropdownMenuTrigger>
@@ -176,8 +176,11 @@ export function Topbar({ setIsOpen }: TopbarProps) {
   ]
 
   return (
-    <header className="h-24 glass sticky top-0 z-40 flex items-center justify-between px-10 border-b shadow-sm">
-      <div className="flex items-center gap-8">
+    <header className="h-24 glass fixed top-0 right-0 left-0 z-40 flex items-center justify-between px-10 border-b shadow-sm transition-all duration-500">
+      <div className={cn(
+        "flex items-center gap-8 transition-all duration-500",
+        language === 'ar' ? "lg:pr-72" : "lg:pl-72"
+      )}>
         <Button 
           variant="ghost" 
           size="icon" 
@@ -198,22 +201,6 @@ export function Topbar({ setIsOpen }: TopbarProps) {
       </div>
 
       <div className="flex items-center gap-6">
-        {/* Theme Color Switcher */}
-        <div className="hidden xl:flex items-center gap-2 bg-secondary/40 p-1.5 rounded-2xl border-2 border-transparent shadow-inner">
-          {themes.map((t) => (
-            <button
-              key={t.name}
-              onClick={() => setColorTheme(t.name)}
-              className={cn(
-                "size-8 rounded-xl transition-all hover:scale-110 active:scale-90 shadow-sm",
-                t.color,
-                colorTheme === t.name ? "ring-2 ring-offset-2 ring-primary scale-110" : "opacity-70 hover:opacity-100"
-              )}
-              title={`Switch to ${t.name} theme`}
-            />
-          ))}
-        </div>
-
         <div className="flex items-center bg-secondary/40 p-1.5 rounded-2xl border-2 border-transparent shadow-inner">
           <Button 
             variant="ghost" 

@@ -27,23 +27,23 @@ import {
 } from "@/components/ui/dialog"
 import { Label } from "@/components/ui/label"
 
-const MOCK_STUDENTS = [
-  { id: "1", name: "Ahmed Ali", email: "ahmed@example.com", phone: "+20 123 456 789", level: "Level 4", gpa: "3.8", status: "Active" },
-  { id: "2", name: "Sara Hassan", email: "sara@example.com", phone: "+20 123 456 780", level: "Level 3", gpa: "3.6", status: "Active" },
-  { id: "3", name: "Mohamed Omar", email: "mohamed@example.com", phone: "+20 123 456 781", level: "Level 2", gpa: "3.2", status: "On Leave" },
-  { id: "4", name: "Laila Mahmoud", email: "laila@example.com", phone: "+20 123 456 782", level: "Level 4", gpa: "3.9", status: "Active" },
-  { id: "5", name: "Youssef Zaki", email: "youssef@example.com", phone: "+20 123 456 783", level: "Level 1", gpa: "3.5", status: "Active" },
+const studentDirectory = [
+  { id: "STD-2023-001", name: "Ahmed Ramadan Korany", email: "ahmed.ramadan@university.edu", phone: "+20 101 234 5678", level: "Level 4", gpa: "3.85", status: "Active" },
+  { id: "STD-2023-002", name: "Sara Ahmed Hassan", email: "sara.hassan@university.edu", phone: "+20 102 345 6789", level: "Level 3", gpa: "3.62", status: "Active" },
+  { id: "STD-2023-003", name: "Mohamed Ali Omar", email: "mohamed.omar@university.edu", phone: "+20 103 456 7890", level: "Level 2", gpa: "3.24", status: "On Leave" },
+  { id: "STD-2023-004", name: "Laila Mahmoud Zaki", email: "laila.mahmoud@university.edu", phone: "+20 104 567 8901", level: "Level 4", gpa: "3.91", status: "Active" },
+  { id: "STD-2023-005", name: "Youssef Ibrahim Zaki", email: "youssef.zaki@university.edu", phone: "+20 105 678 9012", level: "Level 1", gpa: "3.55", status: "Active" },
 ]
 
 export function Students() {
   const { t } = useApp()
 
   return (
-    <div className="space-y-8">
-      <div className="flex flex-col gap-4 sm:flex-row sm:items-center sm:justify-between">
+    <div className="space-y-10">
+      <div className="flex flex-col gap-6 sm:flex-row sm:items-center sm:justify-between">
         <div>
-          <h1 className="text-3xl font-black tracking-tight">{t('students')}</h1>
-          <p className="text-muted-foreground font-medium">Manage student records and academic performance.</p>
+          <h1 className="text-4xl font-black tracking-tight bg-clip-text text-transparent bg-gradient-to-r from-foreground to-foreground/70">{t('students')}</h1>
+          <p className="text-muted-foreground font-medium mt-1">Manage student records, academic levels, and performance metrics.</p>
         </div>
         
         <Dialog>
@@ -153,7 +153,7 @@ export function Students() {
               </TableRow>
             </TableHeader>
             <TableBody>
-              {MOCK_STUDENTS.map((student) => (
+              {studentDirectory.map((student) => (
                 <TableRow key={student.id} className="group hover:bg-muted/30 border-b border-border/50 transition-colors">
                   <TableCell className="ps-8 py-5">
                     <div className="flex items-center gap-4">

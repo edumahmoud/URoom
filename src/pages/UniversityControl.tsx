@@ -9,90 +9,94 @@ import { cn } from "@/lib/utils"
 export function UniversityControl() {
   const { t } = useApp()
 
+  const systemStats = [
+    { label: "System Status", value: "Operational", icon: Activity, color: "emerald" as const },
+    { label: "Database Load", value: "14%", icon: Database, color: "primary" as const },
+    { label: "Active Sessions", value: "1,245", icon: Globe, color: "amber" as const },
+    { label: "Security Level", value: "High", icon: Shield, color: "emerald" as const },
+  ]
+
+  const infrastructureHealth = [
+    { name: "Main Database Cluster", status: "Healthy", load: 24, icon: Database },
+    { name: "Authentication Service", status: "Healthy", load: 12, icon: Lock },
+    { name: "File Storage (CDN)", status: "Healthy", load: 45, icon: Server },
+    { name: "LMS Core Engine", status: "Healthy", load: 32, icon: Cpu },
+  ]
+
   return (
-    <div className="space-y-8">
-      <div className="flex flex-col gap-4 sm:flex-row sm:items-center sm:justify-between">
+    <div className="space-y-10">
+      <div className="flex flex-col gap-6 sm:flex-row sm:items-center sm:justify-between">
         <div>
-          <h1 className="text-3xl font-black tracking-tight">{t('uni_mgmt')}</h1>
-          <p className="text-muted-foreground font-medium">Global university system configuration and security monitoring.</p>
+          <h1 className="text-4xl font-black tracking-tight text-gradient">{t('uni_mgmt')}</h1>
+          <p className="text-muted-foreground font-medium mt-1">Global university system configuration and security monitoring.</p>
         </div>
-        <div className="flex items-center gap-3">
-          <Button variant="outline" className="rounded-xl font-bold gap-2 h-12 px-6">
-            <Activity className="size-4" />
+        <div className="flex items-center gap-4">
+          <Button variant="outline" className="rounded-2xl font-black gap-2 h-14 px-8 border-2 hover-lift">
+            <Activity className="size-5" />
             System Logs
           </Button>
-          <Button className="rounded-xl font-bold gap-2 h-12 px-6 shadow-lg shadow-primary/20">
-            <Settings className="size-4" />
+          <Button className="rounded-2xl font-black gap-2 h-14 px-8 shadow-2xl shadow-primary/20 hover-lift">
+            <Settings className="size-5" />
             Global Settings
           </Button>
         </div>
       </div>
 
       <div className="grid gap-8 md:grid-cols-2 lg:grid-cols-4">
-        {[
-          { label: "System Status", value: "Operational", icon: Activity, color: "emerald" as const },
-          { label: "Database Load", value: "12%", icon: Database, color: "primary" as const },
-          { label: "Active Sessions", value: "1,420", icon: Globe, color: "amber" as const },
-          { label: "Security Level", value: "High", icon: Shield, color: "emerald" as const },
-        ].map((stat, i) => (
-          <Card key={i} className="border-none shadow-sm rounded-3xl overflow-hidden relative group">
+        {systemStats.map((stat, i) => (
+          <Card key={i} className="border-none shadow-xl rounded-[2.5rem] overflow-hidden relative group hover-lift">
             <div className={cn(
               "absolute inset-0 opacity-5 group-hover:opacity-10 transition-opacity", 
               stat.color === 'emerald' ? "bg-emerald-500" : 
               stat.color === 'amber' ? "bg-amber-500" : "bg-primary"
             )} />
-            <CardContent className="p-6 flex items-center gap-4">
+            <CardContent className="p-8 flex items-center gap-5">
               <div className={cn(
-                "size-12 rounded-2xl flex items-center justify-center",
+                "size-14 rounded-2xl flex items-center justify-center shadow-inner",
                 stat.color === 'emerald' ? "bg-emerald-500/10 text-emerald-600" : 
                 stat.color === 'amber' ? "bg-amber-500/10 text-amber-600" : "bg-primary/10 text-primary"
               )}>
-                <stat.icon className="size-6" />
+                <stat.icon className="size-7" />
               </div>
               <div>
-                <p className="text-xs font-bold text-muted-foreground uppercase tracking-wider">{stat.label}</p>
-                <p className="text-xl font-black">{stat.value}</p>
+                <p className="text-xs font-black text-muted-foreground uppercase tracking-[0.2em]">{stat.label}</p>
+                <p className="text-2xl font-black tracking-tight">{stat.value}</p>
               </div>
             </CardContent>
           </Card>
         ))}
       </div>
 
-      <div className="grid gap-8 lg:grid-cols-3">
-        <Card className="lg:col-span-2 border-none shadow-xl rounded-[2.5rem] overflow-hidden">
-          <CardHeader className="p-8 border-b bg-muted/30">
-            <CardTitle className="text-2xl font-black">Infrastructure Health</CardTitle>
-            <CardDescription className="text-base font-medium">Real-time monitoring of university servers and services.</CardDescription>
+      <div className="grid gap-10 lg:grid-cols-3">
+        <Card className="lg:col-span-2 border-none shadow-2xl rounded-[3rem] overflow-hidden bg-card/50 backdrop-blur-sm">
+          <CardHeader className="p-10 border-b bg-muted/30">
+            <CardTitle className="text-3xl font-black tracking-tight">Infrastructure Health</CardTitle>
+            <CardDescription className="text-lg font-medium">Real-time monitoring of university servers and core services.</CardDescription>
           </CardHeader>
-          <CardContent className="p-8 space-y-8">
-            {[
-              { name: "Main Database Cluster", status: "Healthy", load: 24, icon: Database },
-              { name: "Authentication Service", status: "Healthy", load: 12, icon: Lock },
-              { name: "File Storage (CDN)", status: "Healthy", load: 45, icon: Server },
-              { name: "LMS Core Engine", status: "Warning", load: 82, icon: Cpu },
-            ].map((service, i) => (
-              <div key={i} className="flex items-center justify-between p-6 rounded-2xl bg-secondary/30 border border-transparent hover:border-primary/10 transition-all">
-                <div className="flex items-center gap-4">
-                  <div className="size-12 rounded-xl bg-background flex items-center justify-center text-muted-foreground shadow-sm">
-                    <service.icon className="size-6" />
+          <CardContent className="p-10 space-y-8">
+            {infrastructureHealth.map((service, i) => (
+              <div key={i} className="flex items-center justify-between p-8 rounded-[2rem] bg-secondary/30 border-2 border-transparent hover:border-primary/10 transition-all hover:bg-secondary/50">
+                <div className="flex items-center gap-6">
+                  <div className="size-16 rounded-2xl bg-background flex items-center justify-center text-muted-foreground shadow-inner">
+                    <service.icon className="size-8" />
                   </div>
-                  <div>
-                    <p className="font-bold">{service.name}</p>
+                  <div className="space-y-1">
+                    <p className="text-xl font-black tracking-tight">{service.name}</p>
                     <Badge className={cn(
-                      "rounded-lg font-bold text-[10px] uppercase tracking-widest",
+                      "rounded-xl font-black text-[10px] px-3 py-1 uppercase tracking-widest border-none",
                       service.status === 'Healthy' ? "bg-emerald-500/10 text-emerald-600" : "bg-amber-500/10 text-amber-600"
                     )}>
                       {service.status}
                     </Badge>
                   </div>
                 </div>
-                <div className="text-end space-y-2">
-                  <p className="text-xs font-bold text-muted-foreground uppercase tracking-wider">Load</p>
-                  <div className="flex items-center gap-3">
-                    <div className="h-2 w-32 bg-background rounded-full overflow-hidden">
-                      <div className={cn("h-full transition-all", service.load > 80 ? "bg-amber-500" : "bg-primary")} style={{ width: `${service.load}%` }} />
+                <div className="text-end space-y-3">
+                  <p className="text-xs font-black text-muted-foreground uppercase tracking-[0.2em]">Current Load</p>
+                  <div className="flex items-center gap-4">
+                    <div className="h-3 w-40 bg-background rounded-full overflow-hidden shadow-inner">
+                      <div className={cn("h-full transition-all duration-1000", service.load > 80 ? "bg-amber-500" : "bg-primary")} style={{ width: `${service.load}%` }} />
                     </div>
-                    <span className="text-sm font-black">{service.load}%</span>
+                    <span className="text-lg font-black tracking-tighter">{service.load}%</span>
                   </div>
                 </div>
               </div>

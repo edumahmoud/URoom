@@ -33,7 +33,7 @@ function AppContent() {
       />
       
       <div className={cn(
-        "transition-all duration-500 ease-in-out",
+        "transition-all duration-500 ease-in-out pt-24",
         language === 'ar' ? "lg:pr-72" : "lg:pl-72"
       )}>
         <Topbar 

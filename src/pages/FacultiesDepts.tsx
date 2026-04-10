@@ -27,21 +27,22 @@ import {
 import { Label } from "@/components/ui/label"
 
 const universityFaculties = [
-  { id: "FAC-001", name: "Faculty of Engineering", dean: "Prof. Ahmed Ali", departments: 8, students: 2400, status: "Active" },
-  { id: "FAC-002", name: "Faculty of Computer Science", dean: "Prof. Sara Hassan", departments: 4, students: 1200, status: "Active" },
-  { id: "FAC-003", name: "Faculty of Science", dean: "Prof. Mohamed Omar", departments: 6, students: 1800, status: "Active" },
-  { id: "FAC-004", name: "Faculty of Arts", dean: "Prof. Laila Mahmoud", departments: 10, students: 3200, status: "Active" },
+  { id: "FAC-CS", name: "Computer Science & IT", dean: "Dr. Ahmed Ramadan Korany", departments: 4, students: 1284, status: "Active" },
+  { id: "FAC-ENG", name: "Engineering", dean: "Dr. Sara Ahmed Hassan", departments: 6, students: 2450, status: "Active" },
+  { id: "FAC-MED", name: "Medicine", dean: "Dr. Mohamed Ali Omar", departments: 8, students: 1840, status: "Active" },
+  { id: "FAC-BUS", name: "Business Administration", dean: "Dr. Laila Mahmoud Zaki", departments: 5, students: 3120, status: "Active" },
+  { id: "FAC-ART", name: "Arts & Humanities", dean: "Dr. Youssef Ibrahim Zaki", departments: 7, students: 1560, status: "Active" },
 ]
 
 export function FacultiesDepts() {
   const { t } = useApp()
 
   return (
-    <div className="space-y-8">
-      <div className="flex flex-col gap-4 sm:flex-row sm:items-center sm:justify-between">
+    <div className="space-y-10">
+      <div className="flex flex-col gap-6 sm:flex-row sm:items-center sm:justify-between">
         <div>
-          <h1 className="text-3xl font-black tracking-tight">{t('faculties')}</h1>
-          <p className="text-muted-foreground font-medium">Manage university faculties, departments, and leadership.</p>
+          <h1 className="text-4xl font-black tracking-tight text-gradient">{t('faculties')}</h1>
+          <p className="text-muted-foreground font-medium mt-1">Manage university faculties, departments, and administrative leadership.</p>
         </div>
         
         <Dialog>

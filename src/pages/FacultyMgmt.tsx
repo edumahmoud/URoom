@@ -27,23 +27,23 @@ import {
 } from "@/components/ui/dialog"
 import { Label } from "@/components/ui/label"
 
-const MOCK_FACULTY = [
-  { id: "1", name: "Dr. Ahmed Hassan", role: "Professor", department: "Computer Science", courses: 3, status: "Active" },
-  { id: "2", name: "Dr. Sara Ali", role: "Associate Professor", department: "Information Systems", courses: 2, status: "Active" },
-  { id: "3", name: "Eng. Mohamed Omar", role: "Teaching Assistant", department: "Computer Science", courses: 4, status: "On Leave" },
-  { id: "4", name: "Dr. Laila Mahmoud", role: "Professor", department: "Software Engineering", courses: 2, status: "Active" },
-  { id: "5", name: "Dr. Youssef Zaki", role: "Assistant Professor", department: "Information Systems", courses: 3, status: "Active" },
+const facultyDirectory = [
+  { id: "FAC-001", name: "Dr. Ahmed Ramadan Korany", role: "Professor", department: "Computer Science", courses: 3, status: "Active" },
+  { id: "FAC-002", name: "Dr. Sara Ahmed Hassan", role: "Associate Professor", department: "Information Systems", courses: 2, status: "Active" },
+  { id: "FAC-003", name: "Eng. Mohamed Ali Omar", role: "Teaching Assistant", department: "Computer Science", courses: 4, status: "On Leave" },
+  { id: "FAC-004", name: "Dr. Laila Mahmoud Zaki", role: "Professor", department: "Software Engineering", courses: 2, status: "Active" },
+  { id: "FAC-005", name: "Dr. Youssef Ibrahim Zaki", role: "Assistant Professor", department: "Information Systems", courses: 3, status: "Active" },
 ]
 
 export function FacultyMgmt() {
   const { t } = useApp()
 
   return (
-    <div className="space-y-8">
-      <div className="flex flex-col gap-4 sm:flex-row sm:items-center sm:justify-between">
+    <div className="space-y-10">
+      <div className="flex flex-col gap-6 sm:flex-row sm:items-center sm:justify-between">
         <div>
-          <h1 className="text-3xl font-black tracking-tight">{t('faculty_mgmt')}</h1>
-          <p className="text-muted-foreground font-medium">Manage faculty members, roles, and department assignments.</p>
+          <h1 className="text-4xl font-black tracking-tight bg-clip-text text-transparent bg-gradient-to-r from-foreground to-foreground/70">{t('faculty_mgmt')}</h1>
+          <p className="text-muted-foreground font-medium mt-1">Manage faculty members, academic roles, and department assignments.</p>
         </div>
         
         <Dialog>
@@ -147,7 +147,7 @@ export function FacultyMgmt() {
               </TableRow>
             </TableHeader>
             <TableBody>
-              {MOCK_FACULTY.map((member) => (
+              {facultyDirectory.map((member) => (
                 <TableRow key={member.id} className="group hover:bg-muted/30 border-b border-border/50 transition-colors">
                   <TableCell className="ps-8 py-5">
                     <div className="flex items-center gap-4">
