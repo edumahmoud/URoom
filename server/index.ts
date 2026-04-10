@@ -1,7 +1,7 @@
 import express from 'express';
 import cors from 'cors';
 import { config } from './config/env.js';
-import { checkDbConnection } from './config/db.js';
+import { checkDbConnection, prisma } from './config/db.js';
 import apiRouter from './routes/api.js';
 
 const app = express();
@@ -34,8 +34,17 @@ const startServer = async () => {
   // التأكد من الاتصال بقاعدة البيانات قبل بدء السيرفر
   await checkDbConnection();
 
-  app.listen(config.port, () => {
+  const server = app.listen(config.port, () => {
     console.log(`🚀 URoom Server is running on http://localhost:${config.port}`);
+  });
+
+  // إغلاق اتصال قاعدة البيانات عند توقف السيرفر
+  process.on('SIGINT', async () => {
+    await prisma.$disconnect();
+    server.close(() => {
+      console.log('🛑 Server and Database connection closed.');
+      process.exit(0);
+    });
   });
 };
 

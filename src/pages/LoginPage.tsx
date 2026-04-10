@@ -4,6 +4,7 @@ import { GraduationCap, ShieldCheck, BookOpen, Building2 } from 'lucide-react';
 
 export default function LoginPage() {
   const { t, setRole, setUser } = useApp();
+  const [isLoggingIn, setIsLoggingIn] = React.useState<string | null>(null);
 
   const roles = [
     { id: 'ADMIN', title: 'University Admin', icon: ShieldCheck, color: 'text-rose-600 bg-rose-50' },
@@ -13,6 +14,7 @@ export default function LoginPage() {
   ];
 
   const handleLogin = async (roleId: string) => {
+    setIsLoggingIn(roleId);
     try {
       const response = await fetch('http://localhost:3001/api/auth/login', {
         method: 'POST',
@@ -28,11 +30,14 @@ export default function LoginPage() {
 
       const data = await response.json();
       if (data.user) {
+        setRole(data.user.role); // تحديث الدور في السياق العام
         setUser(data.user);
       }
     } catch (error) {
       console.error('Login failed:', error);
       alert('تعذر الاتصال بالسيرفر. يرجى التأكد من تشغيل الخلفية (Backend) وحاول مجدداً.');
+    } finally {
+      setIsLoggingIn(null);
     }
   };
 

@@ -13,7 +13,7 @@ import {
 } from "@/components/ui/table"
 import { Badge } from "@/components/ui/badge"
 import { Avatar, AvatarFallback } from "@/components/ui/avatar"
-import { useApp } from "@/src/context/AppContext"
+import { useApp } from "@/context/AppContext"
 import { cn } from "@/lib/utils"
 
 import { 
@@ -40,10 +40,12 @@ export function FacultyMgmt() {
             'x-user-role': user?.role || 'STUDENT'
           }
         });
+        if (!response.ok) throw new Error('Failed to fetch');
         const data = await response.json();
         setFaculty(Array.isArray(data) ? data : []);
       } catch (error) {
         console.error('Failed to fetch faculty:', error);
+        setFaculty([]);
       } finally {
         setIsLoading(false);
       }
@@ -172,7 +174,7 @@ export function FacultyMgmt() {
                       <div className="flex items-center gap-4">
                         <Avatar className="size-10 rounded-xl border-2 border-background shadow-sm">
                           <AvatarFallback className="bg-primary/10 text-primary font-bold">
-                            {member.name?.split(' ').map((n: any) => n[0]).join('')}
+                          {member.name ? member.name.split(' ').map((n: string) => n[0]).join('').toUpperCase() : '??'}
                           </AvatarFallback>
                         </Avatar>
                         <div className="flex flex-col">

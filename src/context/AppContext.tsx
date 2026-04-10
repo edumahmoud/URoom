@@ -118,11 +118,16 @@ export function AppProvider({ children }: { children: React.ReactNode }) {
   const [theme, setTheme] = React.useState<Theme>('light');
   const [colorTheme, setColorTheme] = React.useState<string>('indigo');
   const [user, setUser] = React.useState<any>(null);
+  const [manualRole, setManualRole] = React.useState<UserRole | null>(null);
 
-  // اشتقاق الدور من المستخدم أو تعيين دور افتراضي (STUDENT)
-  const role = user?.role || 'STUDENT';
+  // الدور المشتق: الأولوية للمستخدم المسجل. إذا لم يوجد، نستخدم الاختيار اليدوي.
+  const role = React.useMemo(() => {
+    return (user?.role as UserRole) || manualRole || 'STUDENT';
+  }, [user, manualRole]);
+
   const setRole = (newRole: UserRole) => {
-    if (user) setUser({ ...user, role: newRole });
+    setManualRole(newRole);
+    if (user) setUser((prev: any) => ({ ...prev, role: newRole }));
   };
 
   const toggleTheme = () => setTheme(prev => prev === 'light' ? 'dark' : 'light');
