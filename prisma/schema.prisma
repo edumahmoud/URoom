@@ -1,6 +1,3 @@
-// This is your Prisma schema file,
-// learn more about it in the docs: https://pris.ly/d/prisma-schema
-
 generator client {
   provider = "prisma-client-js"
 }
@@ -11,76 +8,147 @@ datasource db {
 }
 
 enum Role {
-  STUDENT
-  FACULTY
   ADMIN
+  FACULTY
+  DOCTOR_TA
+  STUDENT
+}
+
+enum AttendanceStatus {
+  PRESENT
+  ABSENT
+  LATE
+  EXCUSED
+}
+
+enum Semester {
+  FALL
+  SPRING
+  SUMMER
 }
 
 model User {
   id        String   @id @default(cuid())
   email     String   @unique
-  password  String
-  name      String
+  name      String?
   role      Role     @default(STUDENT)
+  status    String?  @default("Active") // Active, Inactive, On Leave
+  level     String?  // خاص بالطلاب: المستوى الدراسي
+  gpa       Float?   // خاص بالطلاب: المعدل التراكمي
   createdAt DateTime @default(now())
   updatedAt DateTime @updatedAt
 
-  enrollments Enrollment[]
+  // العلاقات
+  profile   Profile?
+  
+  // للدكاترة والمعيدين: الشعب التي يقومون بتدريسها
+  taughtSections Section[] @relation("Instructor")
 
-  @@map("users")
+  // للطلاب: التسجيل، الحضور، والدرجات
+  enrollments   Enrollment[]
+  attendance    Attendance[]
+  grades        Grade[]
+  
+  // الانتماء للقسم (لأعضاء هيئة التدريس والطلاب)
+  departmentId String?
+  department   Department? @relation(fields: [departmentId], references: [id])
 }
 
-model Faculty {
-  id           String     @id @default(cuid())
-  userId       String     @unique
-  user         User       @relation(fields: [userId], references: [id], onDelete: Cascade)
-  departmentId String
-  department   Department @relation(fields: [departmentId], references: [id], onDelete: Cascade)
-  createdAt    DateTime   @default(now())
-  updatedAt    DateTime   @updatedAt
-
-  courses Course[]
-
-  @@map("faculties")
+model Profile {
+  id          String   @id @default(cuid())
+  userId      String   @unique
+  user        User     @relation(fields: [userId], references: [id], onDelete: Cascade)
+  phoneNumber String?
+  address     String?
+  bio         String?
+  avatarUrl   String?
 }
 
 model Department {
-  id        String   @id @default(cuid())
-  name      String   @unique
-  createdAt DateTime @default(now())
-  updatedAt DateTime @updatedAt
-
-  faculties Faculty[]
-  courses   Course[]
-
-  @@map("departments")
+  id      String   @id @default(cuid())
+  name    String
+  code    String   @unique
+  users   User[]
+  courses Course[]
 }
 
 model Course {
   id           String     @id @default(cuid())
   name         String
   code         String     @unique
+  credits      Int
   departmentId String
-  department   Department @relation(fields: [departmentId], references: [id], onDelete: Cascade)
-  facultyId    String
-  faculty      Faculty    @relation(fields: [facultyId], references: [id], onDelete: Cascade)
-  createdAt    DateTime   @default(now())
-  updatedAt    DateTime   @updatedAt
+  department   Department @relation(fields: [departmentId], references: [id])
+  sections     Section[]
+}
 
+model Section {
+  id          String   @id @default(cuid())
+  code        String   // رقم الشعبة أو المجموعة (e.g., Group A)
+  semester    Semester
+  year        Int
+  
+  courseId    String
+  course      Course   @relation(fields: [courseId], references: [id])
+  
+  instructorId String
+  instructor   User     @relation("Instructor", fields: [instructorId], references: [id])
+  
   enrollments Enrollment[]
-
-  @@map("courses")
+  schedules   Schedule[]
+  grades      Grade[]
 }
 
 model Enrollment {
   id        String   @id @default(cuid())
-  userId    String
-  user      User     @relation(fields: [userId], references: [id], onDelete: Cascade)
-  courseId  String
-  course    Course   @relation(fields: [courseId], references: [id], onDelete: Cascade)
-  grade     String?
-  enrolledAt DateTime @default(now())
+  studentId String
+  student   User     @relation(fields: [studentId], references: [id])
+  sectionId String
+  section   Section  @relation(fields: [sectionId], references: [id])
+  createdAt DateTime @default(now())
 
-  @@unique([userId, courseId])
-  @@map("enrollments")
+  @@unique([studentId, sectionId])
+}
+
+model Schedule {
+  id        String   @id @default(cuid())
+  dayOfWeek Int      // 0-6 (0 للأحد أو السبت حسب نظام الجامعة)
+  startTime String   // "08:30"
+  endTime   String   // "10:00"
+  room      String?  // القاعة الدراسية
+  
+  sectionId String
+  section   Section  @relation(fields: [sectionId], references: [id])
+  
+  attendance Attendance[]
+}
+
+model Attendance {
+  id         String           @id @default(cuid())
+  date       DateTime         // تاريخ المحاضرة الفعلي
+  status     AttendanceStatus @default(PRESENT)
+  
+  studentId  String
+  student    User             @relation(fields: [studentId], references: [id])
+  
+  scheduleId String
+  schedule   Schedule         @relation(fields: [scheduleId], references: [id])
+
+  @@unique([studentId, scheduleId, date])
+}
+
+model Grade {
+  id         String   @id @default(cuid())
+  type       String   // MIDTERM, FINAL, ASSIGNMENT, QUIZ
+  score      Float
+  maxScore   Float
+  
+  studentId  String
+  student    User     @relation(fields: [studentId], references: [id])
+  
+  sectionId  String
+  section    Section  @relation(fields: [sectionId], references: [id])
+  
+  createdAt  DateTime @default(now())
+  updatedAt  DateTime @updatedAt
 }

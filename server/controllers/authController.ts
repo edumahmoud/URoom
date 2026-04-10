@@ -1,8 +1,14 @@
 import { Request, Response } from 'express';
 import { prisma } from '../config/db.js';
+import jwt from 'jsonwebtoken';
+import { config } from '../config/env.js';
 
 export const loginOrSignup = async (req: Request, res: Response) => {
   const { email, name, role } = req.body;
+
+  // أمنياً: التحقق من أن الدور المرسل هو دور صالح وليس محاولة اختراق
+  const validRoles = ['ADMIN', 'FACULTY', 'DOCTOR_TA', 'STUDENT'];
+  const finalRole = validRoles.includes(role) ? role : 'STUDENT';
 
   try {
     // البحث عن المستخدم أو إنشاؤه تلقائياً (Upsert)
@@ -15,7 +21,7 @@ export const loginOrSignup = async (req: Request, res: Response) => {
       create: {
         email,
         name,
-        role: role || 'STUDENT',
+        role: finalRole,
       },
     });
 
@@ -27,8 +33,16 @@ export const loginOrSignup = async (req: Request, res: Response) => {
       canViewResults: true,
     };
 
+    // إصدار توكن JWT للموبايل والويب
+    const token = jwt.sign(
+      { id: user.id, email: user.email, role: user.role },
+      config.jwtSecret,
+      { expiresIn: '30d' } // مدة طويلة تناسب مستخدم الموبايل
+    );
+
     res.status(200).json({
       user,
+      token,
       permissions,
     });
   } catch (error) {

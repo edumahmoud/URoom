@@ -126,8 +126,8 @@ export function AppProvider({ children }: { children: React.ReactNode }) {
   }, [user, manualRole]);
 
   const setRole = (newRole: UserRole) => {
-    setManualRole(newRole);
-    if (user) setUser((prev: any) => ({ ...prev, role: newRole }));
+    if (user) setUser((prev: any) => prev ? { ...prev, role: newRole } : null);
+    else setManualRole(newRole);
   };
 
   const toggleTheme = () => setTheme(prev => prev === 'light' ? 'dark' : 'light');

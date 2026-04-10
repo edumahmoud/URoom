@@ -31,6 +31,7 @@ export function Students() {
   const { t, user } = useApp()
   const [students, setStudents] = React.useState<any[]>([])
   const [isLoading, setIsLoading] = React.useState(true)
+  const [searchQuery, setSearchQuery] = React.useState("")
 
   React.useEffect(() => {
     const fetchStudents = async () => {
@@ -53,6 +54,13 @@ export function Students() {
 
     fetchStudents();
   }, [user]);
+
+  const filteredStudents = React.useMemo(() => {
+    return students.filter(s => 
+      s.name?.toLowerCase().includes(searchQuery.toLowerCase()) ||
+      s.email?.toLowerCase().includes(searchQuery.toLowerCase())
+    );
+  }, [students, searchQuery]);
 
   return (
     <div className="space-y-10">
@@ -147,6 +155,8 @@ export function Students() {
               <Input 
                 placeholder="Search students by name, ID or email..." 
                 className="h-12 ps-11 rounded-2xl bg-background border-none shadow-inner"
+                value={searchQuery}
+                onChange={(e) => setSearchQuery(e.target.value)}
               />
             </div>
             <div className="flex items-center gap-3">
@@ -171,16 +181,16 @@ export function Students() {
             <TableBody>
               {isLoading ? (
                 <TableRow><TableCell colSpan={5} className="text-center py-10 font-bold">جاري تحميل البيانات...</TableCell></TableRow>
-              ) : students.length === 0 ? (
+              ) : filteredStudents.length === 0 ? (
                 <TableRow><TableCell colSpan={5} className="text-center py-10 text-muted-foreground">لا يوجد طلاب مسجلين حالياً</TableCell></TableRow>
               ) : (
-                students.map((student) => (
+                filteredStudents.map((student) => (
                   <TableRow key={student.id} className="group hover:bg-muted/30 border-b border-border/50 transition-colors">
                     <TableCell className="ps-8 py-5">
                       <div className="flex items-center gap-4">
                         <Avatar className="size-10 rounded-xl border-2 border-background shadow-sm">
                           <AvatarFallback className="bg-primary/10 text-primary font-bold">
-                          {student.name ? student.name.split(' ').map((n: string) => n[0]).join('').toUpperCase() : '??'}
+                          {student.name ? student.name.split(' ').filter(Boolean).map((n: string) => n[0]).join('').toUpperCase() : '??'}
                           </AvatarFallback>
                         </Avatar>
                         <div className="flex flex-col">
