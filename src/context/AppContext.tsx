@@ -12,12 +12,16 @@ interface AppContextType {
   setColorTheme: (color: string) => void;
   toggleTheme: () => void;
   t: (key: string) => string;
+  user: any;
+  setUser: (user: any) => void;
 }
 
 const AppContext = React.createContext<AppContextType | undefined>(undefined);
 
 const translations: Record<Language, Record<string, string>> = {
   en: {
+    login_title: 'Sign in to URoom',
+    login_subtitle: 'Select your role to continue',
     dashboard: 'Dashboard',
     courses: 'My Courses',
     assignments: 'Assignments',
@@ -62,6 +66,8 @@ const translations: Record<Language, Record<string, string>> = {
     welcome_back: 'Welcome back',
   },
   ar: {
+    login_title: 'تسجيل الدخول إلى URoom',
+    login_subtitle: 'اختر دورك للمتابعة',
     dashboard: 'لوحة القيادة',
     courses: 'مقرراتي',
     assignments: 'التكليفات',
@@ -112,6 +118,7 @@ export function AppProvider({ children }: { children: React.ReactNode }) {
   const [language, setLanguage] = React.useState<Language>('en');
   const [theme, setTheme] = React.useState<Theme>('light');
   const [colorTheme, setColorTheme] = React.useState<string>('indigo');
+  const [user, setUser] = React.useState<any>(null);
 
   const toggleTheme = () => setTheme(prev => prev === 'light' ? 'dark' : 'light');
 
@@ -137,7 +144,7 @@ export function AppProvider({ children }: { children: React.ReactNode }) {
   }, [colorTheme]);
 
   return (
-    <AppContext.Provider value={{ role, setRole, language, setLanguage, theme, setTheme, colorTheme, setColorTheme, toggleTheme, t }}>
+    <AppContext.Provider value={{ role, setRole, language, setLanguage, theme, setTheme, colorTheme, setColorTheme, toggleTheme, t, user, setUser }}>
       {children}
     </AppContext.Provider>
   );

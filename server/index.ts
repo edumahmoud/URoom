@@ -7,7 +7,7 @@ import apiRouter from './routes/api.js';
 const app = express();
 
 app.use(cors({
-  origin: 'http://localhost:3000', // منفذ تطوير Vite
+  origin: process.env.FRONTEND_URL || 'http://localhost:3000',
   methods: ['GET', 'POST', 'PUT', 'DELETE'],
   credentials: true
 }));
