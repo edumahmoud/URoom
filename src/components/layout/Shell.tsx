@@ -1,4 +1,6 @@
 import * as React from "react"
+import { Link, useLocation, useNavigate } from "react-router-dom"
+import { motion, AnimatePresence } from "motion/react"
 import { 
   LayoutDashboard, 
   BookOpen, 
@@ -14,26 +16,28 @@ import {
   LogOut,
   Bell,
   Search,
+  Shield,
   ChevronRight,
   Menu,
-  X,
   Moon,
   Sun,
-  Languages
+  Languages,
+  User
 } from "lucide-react"
 import { cn } from "@/lib/utils"
 import { Button, buttonVariants } from "@/components/ui/button"
-import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar"
+import { Avatar, AvatarFallback } from "@/components/ui/avatar"
 import { 
   DropdownMenu, 
   DropdownMenuContent, 
+  DropdownMenuGroup,
   DropdownMenuItem, 
   DropdownMenuLabel, 
   DropdownMenuSeparator, 
   DropdownMenuTrigger 
 } from "@/components/ui/dropdown-menu"
 import { NAV_ITEMS } from "@/src/constants"
-import { UserRole } from "@/src/types"
+import { useApp } from "@/src/context/AppContext"
 
 const iconMap: Record<string, any> = {
   LayoutDashboard,
@@ -50,77 +54,103 @@ const iconMap: Record<string, any> = {
 }
 
 interface SidebarProps {
-  role: UserRole
-  activeTab: string
-  setActiveTab: (tab: string) => void
   isOpen: boolean
   setIsOpen: (open: boolean) => void
 }
 
-export function Sidebar({ role, activeTab, setActiveTab, isOpen, setIsOpen }: SidebarProps) {
+export function Sidebar({ isOpen, setIsOpen }: SidebarProps) {
+  const { role, t, language } = useApp()
+  const location = useLocation()
+  const navigate = useNavigate()
   const filteredNav = NAV_ITEMS.filter(item => item.roles.includes(role))
 
   return (
     <aside className={cn(
-      "fixed left-0 top-0 z-40 h-screen w-64 border-r bg-background transition-transform lg:translate-x-0",
-      !isOpen && "-translate-x-full"
+      "fixed top-0 z-50 h-screen w-72 border-e bg-card shadow-2xl transition-all duration-500 ease-in-out lg:translate-x-0",
+      language === 'ar' ? "right-0" : "left-0",
+      !isOpen && (language === 'ar' ? "translate-x-full" : "-translate-x-full")
     )}>
-      <div className="flex h-16 items-center border-b px-6">
-        <div className="flex items-center gap-2 font-bold text-xl tracking-tight">
-          <div className="size-8 rounded-lg bg-primary flex items-center justify-center text-primary-foreground">
-            U
+      <div className="flex h-24 items-center border-b px-8">
+        <Link to="/" className="flex items-center gap-4 font-black text-2xl tracking-tighter hover:opacity-80 transition-all active:scale-95">
+          <div className="size-12 rounded-2xl bg-primary flex items-center justify-center text-primary-foreground shadow-xl shadow-primary/30 rotate-3 hover:rotate-0 transition-transform">
+            <School className="size-7" />
           </div>
-          <span>UniManage</span>
-        </div>
+          <span className="bg-clip-text text-transparent bg-gradient-to-br from-foreground via-foreground to-foreground/50">UniManage</span>
+        </Link>
       </div>
       
-      <nav className="flex flex-col gap-1 p-4">
-        {filteredNav.map((item) => {
+      <nav className="flex flex-col gap-2 p-6 overflow-y-auto h-[calc(100vh-12rem)]">
+        {filteredNav.map((item, idx) => {
           const Icon = iconMap[item.icon]
-          const isActive = activeTab === item.href
+          const isActive = location.pathname === item.href
           
           return (
-            <button
+            <motion.div
               key={item.href}
-              onClick={() => {
-                setActiveTab(item.href)
-                if (window.innerWidth < 1024) setIsOpen(false)
-              }}
-              className={cn(
-                "flex items-center gap-3 rounded-lg px-3 py-2 text-sm font-medium transition-colors",
-                isActive 
-                  ? "bg-secondary text-secondary-foreground" 
-                  : "text-muted-foreground hover:bg-secondary/50 hover:text-foreground"
-              )}
+              initial={{ x: -20, opacity: 0 }}
+              animate={{ x: 0, opacity: 1 }}
+              transition={{ delay: idx * 0.05 }}
             >
-              <Icon className="size-4" />
-              {item.title}
-              {isActive && <ChevronRight className="ml-auto size-4" />}
-            </button>
+              <Link
+                to={item.href}
+                onClick={() => {
+                  if (window.innerWidth < 1024) setIsOpen(false)
+                }}
+                className={cn(
+                  "group flex items-center gap-4 rounded-2xl px-5 py-4 text-sm font-bold transition-all duration-300 relative overflow-hidden",
+                  isActive 
+                    ? "bg-primary text-primary-foreground shadow-xl shadow-primary/20" 
+                    : "text-muted-foreground hover:bg-secondary hover:text-foreground"
+                )}
+              >
+                <Icon className={cn(
+                  "size-5 transition-transform group-hover:scale-125 duration-300", 
+                  isActive ? "text-primary-foreground" : "text-muted-foreground/60",
+                  language === 'ar' && ["ChevronRight", "ArrowLeft"].includes(item.icon) && "rotate-180"
+                )} />
+                <span className="relative z-10">{t(item.title)}</span>
+                {isActive && (
+                  <motion.div 
+                    layoutId="active-pill"
+                    className="absolute inset-0 bg-gradient-to-r from-white/10 to-transparent"
+                  />
+                )}
+              </Link>
+            </motion.div>
           )
         })}
       </nav>
 
-      <div className="absolute bottom-0 w-full border-t p-4">
+      <div className="absolute bottom-0 w-full p-6">
         <DropdownMenu>
-          <DropdownMenuTrigger className={cn(buttonVariants({ variant: "ghost" }), "w-full justify-start gap-3 px-2")}>
-            <Avatar className="size-8">
-              <AvatarFallback>UN</AvatarFallback>
-            </Avatar>
-            <div className="flex flex-col items-start text-xs">
-              <span className="font-semibold">User Name</span>
-              <span className="text-muted-foreground capitalize">{role.toLowerCase().replace('_', ' ')}</span>
-            </div>
+          <DropdownMenuTrigger asChild>
+            <Button variant="ghost" className="w-full justify-start gap-4 px-4 h-20 rounded-[2rem] bg-secondary/30 border-2 border-transparent hover:border-primary/20 hover:bg-secondary/50 transition-all shadow-inner">
+              <Avatar className="size-12 border-4 border-background shadow-xl">
+                <AvatarFallback className="bg-primary text-primary-foreground font-black text-lg">MR</AvatarFallback>
+              </Avatar>
+              <div className="flex flex-col items-start text-xs overflow-hidden">
+                <span className="font-black text-sm truncate w-full">Mahmoud Ramadan</span>
+                <span className="text-primary font-black uppercase tracking-widest text-[10px] truncate w-full">{role.replace('_', ' ')}</span>
+              </div>
+            </Button>
           </DropdownMenuTrigger>
-          <DropdownMenuContent align="end" className="w-56">
-            <DropdownMenuLabel>My Account</DropdownMenuLabel>
-            <DropdownMenuSeparator />
-            <DropdownMenuItem>Profile</DropdownMenuItem>
-            <DropdownMenuItem>Settings</DropdownMenuItem>
-            <DropdownMenuSeparator />
-            <DropdownMenuItem className="text-destructive">
-              <LogOut className="mr-2 size-4" />
-              Log out
+          <DropdownMenuContent align="end" className="w-72 rounded-[2rem] p-3 shadow-2xl border-primary/10 backdrop-blur-xl">
+            <DropdownMenuGroup>
+              <DropdownMenuLabel className="px-4 py-3 text-[10px] font-black uppercase tracking-[0.2em] text-muted-foreground/60">User Account</DropdownMenuLabel>
+              <DropdownMenuSeparator className="mx-2" />
+              <DropdownMenuItem onClick={() => navigate('/profile')} className="rounded-2xl px-4 py-3 cursor-pointer font-bold focus:bg-primary focus:text-primary-foreground transition-colors">
+                <User className="me-3 size-5 opacity-70" />
+                {t('profile')}
+              </DropdownMenuItem>
+              <DropdownMenuItem onClick={() => navigate('/settings')} className="rounded-2xl px-4 py-3 cursor-pointer font-bold focus:bg-primary focus:text-primary-foreground transition-colors">
+                <Settings className="me-3 size-5 opacity-70" />
+                {t('settings')}
+              </DropdownMenuItem>
+            </DropdownMenuGroup>
+            <DropdownMenuSeparator className="mx-2" />
+            <DropdownMenuItem className="rounded-2xl px-4 py-3 text-destructive font-black focus:bg-destructive/10 focus:text-destructive cursor-pointer transition-colors">
+              <LogOut className="me-3 size-5" />
+              {t('logout')}
             </DropdownMenuItem>
           </DropdownMenuContent>
         </DropdownMenu>
@@ -130,53 +160,108 @@ export function Sidebar({ role, activeTab, setActiveTab, isOpen, setIsOpen }: Si
 }
 
 interface TopbarProps {
-  role: UserRole
-  setRole: (role: UserRole) => void
   setIsOpen: (open: boolean) => void
-  isDark: boolean
-  setIsDark: (dark: boolean) => void
 }
 
-export function Topbar({ role, setRole, setIsOpen, isDark, setIsDark }: TopbarProps) {
+export function Topbar({ setIsOpen }: TopbarProps) {
+  const { role, setRole, theme, toggleTheme, colorTheme, setColorTheme, language, setLanguage, t } = useApp()
+  const navigate = useNavigate()
+
+  const themes = [
+    { name: 'indigo', color: 'bg-[#6366f1]' },
+    { name: 'emerald', color: 'bg-[#10b981]' },
+    { name: 'rose', color: 'bg-[#f43f5e]' },
+    { name: 'amber', color: 'bg-[#f59e0b]' },
+    { name: 'violet', color: 'bg-[#8b5cf6]' },
+  ]
+
   return (
-    <header className="sticky top-0 z-30 flex h-16 items-center justify-between border-b bg-background/95 px-6 backdrop-blur">
-      <div className="flex items-center gap-4">
-        <Button variant="ghost" size="icon" className="lg:hidden" onClick={() => setIsOpen(true)}>
-          <Menu className="size-5" />
+    <header className="h-24 glass sticky top-0 z-40 flex items-center justify-between px-10 border-b shadow-sm">
+      <div className="flex items-center gap-8">
+        <Button 
+          variant="ghost" 
+          size="icon" 
+          onClick={() => setIsOpen(true)}
+          className="lg:hidden rounded-2xl hover:bg-secondary size-12"
+        >
+          <Menu className="size-6" />
         </Button>
-        <div className="relative hidden md:block">
-          <Search className="absolute left-2.5 top-2.5 size-4 text-muted-foreground" />
-          <input
-            type="search"
-            placeholder="Search system..."
-            className="h-9 w-64 rounded-md border bg-muted/50 pl-9 text-sm focus:outline-none focus:ring-1 focus:ring-ring"
+        
+        <div className="relative hidden md:block group">
+          <Search className="absolute start-4 top-1/2 -translate-y-1/2 size-5 text-muted-foreground transition-colors group-focus-within:text-primary" />
+          <input 
+            type="text" 
+            placeholder={t('search')}
+            className="h-14 w-96 ps-12 pe-6 rounded-2xl bg-secondary/40 border-2 border-transparent focus:border-primary/20 focus:bg-background focus:ring-4 focus:ring-primary/5 transition-all outline-none text-sm font-bold shadow-inner"
           />
         </div>
       </div>
 
-      <div className="flex items-center gap-2">
+      <div className="flex items-center gap-6">
+        {/* Theme Color Switcher */}
+        <div className="hidden xl:flex items-center gap-2 bg-secondary/40 p-1.5 rounded-2xl border-2 border-transparent shadow-inner">
+          {themes.map((t) => (
+            <button
+              key={t.name}
+              onClick={() => setColorTheme(t.name)}
+              className={cn(
+                "size-8 rounded-xl transition-all hover:scale-110 active:scale-90 shadow-sm",
+                t.color,
+                colorTheme === t.name ? "ring-2 ring-offset-2 ring-primary scale-110" : "opacity-70 hover:opacity-100"
+              )}
+              title={`Switch to ${t.name} theme`}
+            />
+          ))}
+        </div>
+
+        <div className="flex items-center bg-secondary/40 p-1.5 rounded-2xl border-2 border-transparent shadow-inner">
+          <Button 
+            variant="ghost" 
+            size="sm" 
+            onClick={() => setLanguage(language === 'en' ? 'ar' : 'en')}
+            className="h-10 px-4 rounded-xl text-[10px] font-black uppercase tracking-[0.15em] hover:bg-background hover:shadow-sm transition-all"
+          >
+            <Languages className="me-2 size-4" />
+            {language === 'en' ? 'AR' : 'EN'}
+          </Button>
+          <div className="w-px h-5 bg-border mx-2" />
+          <Button 
+            variant="ghost" 
+            size="sm" 
+            onClick={toggleTheme}
+            className="h-10 w-10 p-0 rounded-xl hover:bg-background hover:shadow-sm transition-all"
+          >
+            {theme === 'light' ? <Moon className="size-5" /> : <Sun className="size-5" />}
+          </Button>
+        </div>
+
         <DropdownMenu>
-          <DropdownMenuTrigger className={cn(buttonVariants({ variant: "outline", size: "sm" }), "hidden sm:flex")}>
-            Role: {role.split('_').map(w => w[0] + w.slice(1).toLowerCase()).join(' ')}
+          <DropdownMenuTrigger asChild>
+            <Button variant="outline" className="h-14 rounded-2xl gap-3 border-2 border-primary/10 hover:bg-primary/5 hover:text-primary hover:border-primary/30 transition-all font-bold px-6 shadow-sm">
+              <Shield className="size-5" />
+              <span className="hidden sm:inline">{t('switch_role')}</span>
+            </Button>
           </DropdownMenuTrigger>
-          <DropdownMenuContent>
-            <DropdownMenuItem onClick={() => setRole('DOCTOR_TA')}>Doctor / TA</DropdownMenuItem>
-            <DropdownMenuItem onClick={() => setRole('FACULTY_ADMIN')}>Faculty Admin</DropdownMenuItem>
-            <DropdownMenuItem onClick={() => setRole('UNIVERSITY_ADMIN')}>University Admin</DropdownMenuItem>
+          <DropdownMenuContent align="end" className="w-64 rounded-[2rem] p-3 shadow-2xl border-primary/10 backdrop-blur-xl">
+            <DropdownMenuGroup>
+              <DropdownMenuLabel className="px-4 py-3 text-[10px] font-black uppercase tracking-[0.2em] text-muted-foreground/60">Select Role</DropdownMenuLabel>
+              <DropdownMenuSeparator className="mx-2" />
+              <DropdownMenuItem onClick={() => setRole('DOCTOR_TA')} className="rounded-2xl px-4 py-3 cursor-pointer font-bold focus:bg-primary focus:text-primary-foreground transition-colors">
+                Doctor / TA
+              </DropdownMenuItem>
+              <DropdownMenuItem onClick={() => setRole('FACULTY_ADMIN')} className="rounded-2xl px-4 py-3 cursor-pointer font-bold focus:bg-primary focus:text-primary-foreground transition-colors">
+                Faculty Admin
+              </DropdownMenuItem>
+              <DropdownMenuItem onClick={() => setRole('UNIVERSITY_ADMIN')} className="rounded-2xl px-4 py-3 cursor-pointer font-bold focus:bg-primary focus:text-primary-foreground transition-colors">
+                University Admin
+              </DropdownMenuItem>
+            </DropdownMenuGroup>
           </DropdownMenuContent>
         </DropdownMenu>
 
-        <Button variant="ghost" size="icon" onClick={() => setIsDark(!isDark)}>
-          {isDark ? <Sun className="size-5" /> : <Moon className="size-5" />}
-        </Button>
-        
-        <Button variant="ghost" size="icon">
-          <Languages className="size-5" />
-        </Button>
-
-        <Button variant="ghost" size="icon" className="relative">
-          <Bell className="size-5" />
-          <span className="absolute right-2 top-2 size-2 rounded-full bg-primary" />
+        <Button variant="ghost" size="icon" className="size-14 rounded-2xl relative hover:bg-secondary transition-all active:scale-90">
+          <Bell className="size-6" />
+          <span className="absolute top-4 end-4 size-3 bg-destructive rounded-full border-4 border-background shadow-lg" />
         </Button>
       </div>
     </header>

@@ -4,66 +4,66 @@
  */
 
 import * as React from "react"
+import { BrowserRouter as Router, Routes, Route, Navigate } from "react-router-dom"
 import { Sidebar, Topbar } from "@/src/components/layout/Shell"
-import { DoctorDashboard, FacultyDashboard, UniversityDashboard } from "@/src/components/dashboard/Views"
-import { UserRole } from "@/src/types"
+import { AppProvider, useApp } from "@/src/context/AppContext"
+import { Dashboard } from "@/src/pages/Dashboard"
+import { Courses } from "@/src/pages/Courses"
+import { Assignments } from "@/src/pages/Assignments"
+import { Attendance } from "@/src/pages/Attendance"
+import { FacultyMgmt } from "@/src/pages/FacultyMgmt"
+import { Students } from "@/src/pages/Students"
+import { Results } from "@/src/pages/Results"
+import { UniversityControl } from "@/src/pages/UniversityControl"
+import { FacultiesDepts } from "@/src/pages/FacultiesDepts"
+import { SystemUsers } from "@/src/pages/SystemUsers"
+import { Profile } from "@/src/pages/Profile"
+import { Settings } from "@/src/pages/Settings"
 import { cn } from "@/lib/utils"
 
-export default function App() {
-  const [role, setRole] = React.useState<UserRole>('DOCTOR_TA')
-  const [activeTab, setActiveTab] = React.useState('/')
+function AppContent() {
   const [isSidebarOpen, setIsSidebarOpen] = React.useState(false)
-  const [isDark, setIsDark] = React.useState(false)
-
-  // Apply dark mode class to html element
-  React.useEffect(() => {
-    if (isDark) {
-      document.documentElement.classList.add('dark')
-    } else {
-      document.documentElement.classList.remove('dark')
-    }
-  }, [isDark])
-
-  const renderContent = () => {
-    // For this demo, we only show the dashboard overview for each role
-    // In a real app, we would route based on activeTab
-    switch (role) {
-      case 'DOCTOR_TA':
-        return <DoctorDashboard />
-      case 'FACULTY_ADMIN':
-        return <FacultyDashboard />
-      case 'UNIVERSITY_ADMIN':
-        return <UniversityDashboard />
-      default:
-        return <DoctorDashboard />
-    }
-  }
+  const { language, t } = useApp()
 
   return (
-    <div className={cn(
-      "min-h-screen bg-background text-foreground font-sans antialiased",
-      isDark && "dark"
-    )}>
+    <div className="min-h-screen bg-background text-foreground font-sans antialiased">
       <Sidebar 
-        role={role} 
-        activeTab={activeTab} 
-        setActiveTab={setActiveTab} 
         isOpen={isSidebarOpen}
         setIsOpen={setIsSidebarOpen}
       />
       
-      <div className="lg:pl-64">
+      <div className={cn(
+        "transition-all duration-500 ease-in-out",
+        language === 'ar' ? "lg:pr-72" : "lg:pl-72"
+      )}>
         <Topbar 
-          role={role} 
-          setRole={setRole} 
           setIsOpen={setIsSidebarOpen}
-          isDark={isDark}
-          setIsDark={setIsDark}
         />
         
-        <main className="p-6 md:p-8">
-          <div className="mx-auto max-w-7xl">
-            {renderContent()}
+        <main className="p-8 md:p-12 min-h-[calc(100vh-6rem)]">
+          <div className="mx-auto max-w-[1600px] space-y-10">
+            <Routes>
+              <Route path="/" element={<Dashboard />} />
+              <Route path="/courses" element={<Courses />} />
+              <Route path="/courses/:id" element={<Courses />} />
+              <Route path="/assignments" element={<Assignments />} />
+              <Route path="/assignments/:id" element={<Assignments />} />
+              <Route path="/attendance" element={<Attendance />} />
+              <Route path="/profile" element={<Profile />} />
+              <Route path="/settings" element={<Settings />} />
+              
+              {/* Faculty Admin Routes */}
+              <Route path="/faculty-mgmt" element={<FacultyMgmt />} />
+              <Route path="/students" element={<Students />} />
+              <Route path="/results" element={<Results />} />
+              
+              {/* University Admin Routes */}
+              <Route path="/uni-mgmt" element={<UniversityControl />} />
+              <Route path="/faculties" element={<FacultiesDepts />} />
+              <Route path="/users" element={<SystemUsers />} />
+              
+              <Route path="*" element={<Navigate to="/" replace />} />
+            </Routes>
           </div>
         </main>
       </div>
@@ -76,6 +76,16 @@ export default function App() {
         />
       )}
     </div>
+  )
+}
+
+export default function App() {
+  return (
+    <AppProvider>
+      <Router>
+        <AppContent />
+      </Router>
+    </AppProvider>
   )
 }
 
