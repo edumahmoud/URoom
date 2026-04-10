@@ -29,7 +29,6 @@ export default function LoginPage() {
       const data = await response.json();
       if (data.user) {
         setUser(data.user);
-        setRole(data.user.role); // استخدام الدور القادم من قاعدة البيانات
       }
     } catch (error) {
       console.error('Login failed:', error);

@@ -114,11 +114,16 @@ const translations: Record<Language, Record<string, string>> = {
 };
 
 export function AppProvider({ children }: { children: React.ReactNode }) {
-  const [role, setRole] = React.useState<UserRole>('DOCTOR_TA');
   const [language, setLanguage] = React.useState<Language>('en');
   const [theme, setTheme] = React.useState<Theme>('light');
   const [colorTheme, setColorTheme] = React.useState<string>('indigo');
   const [user, setUser] = React.useState<any>(null);
+
+  // اشتقاق الدور من المستخدم أو تعيين دور افتراضي (STUDENT)
+  const role = user?.role || 'STUDENT';
+  const setRole = (newRole: UserRole) => {
+    if (user) setUser({ ...user, role: newRole });
+  };
 
   const toggleTheme = () => setTheme(prev => prev === 'light' ? 'dark' : 'light');
 

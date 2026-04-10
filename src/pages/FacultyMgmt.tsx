@@ -27,16 +27,30 @@ import {
 } from "@/components/ui/dialog"
 import { Label } from "@/components/ui/label"
 
-const facultyDirectory = [
-  { id: "FAC-001", name: "Dr. Ahmed Ramadan Korany", role: "Professor", department: "Computer Science", courses: 3, status: "Active" },
-  { id: "FAC-002", name: "Dr. Sara Ahmed Hassan", role: "Associate Professor", department: "Information Systems", courses: 2, status: "Active" },
-  { id: "FAC-003", name: "Eng. Mohamed Ali Omar", role: "Teaching Assistant", department: "Computer Science", courses: 4, status: "On Leave" },
-  { id: "FAC-004", name: "Dr. Laila Mahmoud Zaki", role: "Professor", department: "Software Engineering", courses: 2, status: "Active" },
-  { id: "FAC-005", name: "Dr. Youssef Ibrahim Zaki", role: "Assistant Professor", department: "Information Systems", courses: 3, status: "Active" },
-]
-
 export function FacultyMgmt() {
-  const { t } = useApp()
+  const { t, user } = useApp()
+  const [faculty, setFaculty] = React.useState<any[]>([])
+  const [isLoading, setIsLoading] = React.useState(true)
+
+  React.useEffect(() => {
+    const fetchFaculty = async () => {
+      try {
+        const response = await fetch('http://localhost:3001/api/users/faculty', {
+          headers: {
+            'x-user-role': user?.role || 'STUDENT'
+          }
+        });
+        const data = await response.json();
+        setFaculty(Array.isArray(data) ? data : []);
+      } catch (error) {
+        console.error('Failed to fetch faculty:', error);
+      } finally {
+        setIsLoading(false);
+      }
+    };
+
+    fetchFaculty();
+  }, [user]);
 
   return (
     <div className="space-y-10">
@@ -147,42 +161,50 @@ export function FacultyMgmt() {
               </TableRow>
             </TableHeader>
             <TableBody>
-              {facultyDirectory.map((member) => (
-                <TableRow key={member.id} className="group hover:bg-muted/30 border-b border-border/50 transition-colors">
-                  <TableCell className="ps-8 py-5">
-                    <div className="flex items-center gap-4">
-                      <Avatar className="size-10 rounded-xl border-2 border-background shadow-sm">
-                        <AvatarFallback className="bg-primary/10 text-primary font-bold">{member.name.split(' ').map(n => n[0]).join('')}</AvatarFallback>
-                      </Avatar>
-                      <div className="flex flex-col">
-                        <span className="font-bold">{member.name}</span>
-                        <span className="text-xs text-muted-foreground font-medium">{member.role}</span>
+              {isLoading ? (
+                <TableRow><TableCell colSpan={5} className="text-center py-10 font-bold">جاري تحميل البيانات...</TableCell></TableRow>
+              ) : faculty.length === 0 ? (
+                <TableRow><TableCell colSpan={5} className="text-center py-10 text-muted-foreground">لا يوجد أعضاء هيئة تدريس مسجلين</TableCell></TableRow>
+              ) : (
+                faculty.map((member) => (
+                  <TableRow key={member.id} className="group hover:bg-muted/30 border-b border-border/50 transition-colors">
+                    <TableCell className="ps-8 py-5">
+                      <div className="flex items-center gap-4">
+                        <Avatar className="size-10 rounded-xl border-2 border-background shadow-sm">
+                          <AvatarFallback className="bg-primary/10 text-primary font-bold">
+                            {member.name?.split(' ').map((n: any) => n[0]).join('')}
+                          </AvatarFallback>
+                        </Avatar>
+                        <div className="flex flex-col">
+                          <span className="font-bold">{member.name}</span>
+                          <span className="text-xs text-muted-foreground font-medium">{member.role?.replace('_', ' ')}</span>
+                        </div>
                       </div>
-                    </div>
-                  </TableCell>
-                  <TableCell className="py-5">
-                    <span className="font-bold text-sm">{member.department}</span>
-                  </TableCell>
-                  <TableCell className="py-5">
-                    <Badge variant="secondary" className="rounded-lg font-bold">
-                      {member.courses} Courses
-                    </Badge>
-                  </TableCell>
-                  <TableCell className="py-5">
-                    <Badge className={cn(
-                      "rounded-lg font-bold",
-                      member.status === 'Active' ? "bg-emerald-500/10 text-emerald-600 border-emerald-500/20" : "bg-amber-500/10 text-amber-600 border-amber-500/20"
-                    )}>
-                      {member.status}
-                    </Badge>
-                  </TableCell>
-                  <TableCell className="pe-8 py-5 text-end">
+                    </TableCell>
+                    <TableCell className="py-5">
+                      <span className="font-bold text-sm">{member.department || 'غير محدد'}</span>
+                    </TableCell>
+                    <TableCell className="py-5">
+                      <Badge variant="secondary" className="rounded-lg font-bold">
+                        {member.coursesCount || 0} Courses
+                      </Badge>
+                    </TableCell>
+                    <TableCell className="py-5">
+                      <Badge className={cn(
+                        "rounded-lg font-bold",
+                        member.status !== 'Inactive' ? "bg-emerald-500/10 text-emerald-600 border-emerald-500/20" : "bg-amber-500/10 text-amber-600 border-amber-500/20"
+                      )}>
+                        {member.status || 'Active'}
+                      </Badge>
+                    </TableCell>
+                    <TableCell className="pe-8 py-5 text-end">
                     <Button variant="ghost" size="icon" className="rounded-xl">
                       <MoreVertical className="size-4" />
                     </Button>
-                  </TableCell>
-                </TableRow>
-              ))}
+                    </TableCell>
+                  </TableRow>
+                ))
+              )}
             </TableBody>
           </Table>
         </CardContent>

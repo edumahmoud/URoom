@@ -2,6 +2,7 @@ import { Router } from 'express';
 import { checkHealth } from '../controllers/healthController.js';
 import { loginOrSignup } from '../controllers/authController.js';
 import { getStudents, getFaculty } from '../controllers/userController.js';
+import { authorize } from '../middleware/roleMiddleware.js';
 
 const router = Router();
 
@@ -12,7 +13,7 @@ router.get('/health', checkHealth);
 router.post('/auth/login', loginOrSignup);
 
 // مسارات إدارة المستخدمين
-router.get('/users/students', getStudents);
-router.get('/users/faculty', getFaculty);
+router.get('/users/students', authorize(['ADMIN', 'FACULTY']), getStudents);
+router.get('/users/faculty', authorize(['ADMIN']), getFaculty);
 
 export default router;

@@ -9,6 +9,7 @@ export const getStudents = async (req: Request, res: Response) => {
     });
     res.json(students);
   } catch (error) {
+    console.error('Error fetching students:', error);
     res.status(500).json({ error: 'فشل في جلب قائمة الطلاب' });
   }
 };
@@ -23,6 +24,7 @@ export const getFaculty = async (req: Request, res: Response) => {
     });
     res.json(faculty);
   } catch (error) {
+    console.error('Error fetching faculty:', error);
     res.status(500).json({ error: 'فشل في جلب قائمة الهيئة التدريسية' });
   }
 };

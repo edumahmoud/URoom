@@ -27,16 +27,30 @@ import {
 } from "@/components/ui/dialog"
 import { Label } from "@/components/ui/label"
 
-const studentDirectory = [
-  { id: "STD-2023-001", name: "Ahmed Ramadan Korany", email: "ahmed.ramadan@university.edu", phone: "+20 101 234 5678", level: "Level 4", gpa: "3.85", status: "Active" },
-  { id: "STD-2023-002", name: "Sara Ahmed Hassan", email: "sara.hassan@university.edu", phone: "+20 102 345 6789", level: "Level 3", gpa: "3.62", status: "Active" },
-  { id: "STD-2023-003", name: "Mohamed Ali Omar", email: "mohamed.omar@university.edu", phone: "+20 103 456 7890", level: "Level 2", gpa: "3.24", status: "On Leave" },
-  { id: "STD-2023-004", name: "Laila Mahmoud Zaki", email: "laila.mahmoud@university.edu", phone: "+20 104 567 8901", level: "Level 4", gpa: "3.91", status: "Active" },
-  { id: "STD-2023-005", name: "Youssef Ibrahim Zaki", email: "youssef.zaki@university.edu", phone: "+20 105 678 9012", level: "Level 1", gpa: "3.55", status: "Active" },
-]
-
 export function Students() {
-  const { t } = useApp()
+  const { t, user } = useApp()
+  const [students, setStudents] = React.useState<any[]>([])
+  const [isLoading, setIsLoading] = React.useState(true)
+
+  React.useEffect(() => {
+    const fetchStudents = async () => {
+      try {
+        const response = await fetch('http://localhost:3001/api/users/students', {
+          headers: {
+            'x-user-role': user?.role || 'STUDENT'
+          }
+        });
+        const data = await response.json();
+        setStudents(Array.isArray(data) ? data : []);
+      } catch (error) {
+        console.error('Failed to fetch students:', error);
+      } finally {
+        setIsLoading(false);
+      }
+    };
+
+    fetchStudents();
+  }, [user]);
 
   return (
     <div className="space-y-10">
@@ -153,42 +167,50 @@ export function Students() {
               </TableRow>
             </TableHeader>
             <TableBody>
-              {studentDirectory.map((student) => (
-                <TableRow key={student.id} className="group hover:bg-muted/30 border-b border-border/50 transition-colors">
-                  <TableCell className="ps-8 py-5">
-                    <div className="flex items-center gap-4">
-                      <Avatar className="size-10 rounded-xl border-2 border-background shadow-sm">
-                        <AvatarFallback className="bg-primary/10 text-primary font-bold">{student.name.split(' ').map(n => n[0]).join('')}</AvatarFallback>
-                      </Avatar>
-                      <div className="flex flex-col">
-                        <span className="font-bold">{student.name}</span>
-                        <span className="text-xs text-muted-foreground font-medium">{student.email}</span>
+              {isLoading ? (
+                <TableRow><TableCell colSpan={5} className="text-center py-10 font-bold">جاري تحميل البيانات...</TableCell></TableRow>
+              ) : students.length === 0 ? (
+                <TableRow><TableCell colSpan={5} className="text-center py-10 text-muted-foreground">لا يوجد طلاب مسجلين حالياً</TableCell></TableRow>
+              ) : (
+                students.map((student) => (
+                  <TableRow key={student.id} className="group hover:bg-muted/30 border-b border-border/50 transition-colors">
+                    <TableCell className="ps-8 py-5">
+                      <div className="flex items-center gap-4">
+                        <Avatar className="size-10 rounded-xl border-2 border-background shadow-sm">
+                          <AvatarFallback className="bg-primary/10 text-primary font-bold">
+                            {student.name?.split(' ').map((n: any) => n[0]).join('')}
+                          </AvatarFallback>
+                        </Avatar>
+                        <div className="flex flex-col">
+                          <span className="font-bold">{student.name}</span>
+                          <span className="text-xs text-muted-foreground font-medium">{student.email}</span>
+                        </div>
                       </div>
-                    </div>
-                  </TableCell>
-                  <TableCell className="py-5">
-                    <span className="font-bold text-sm">{student.level}</span>
-                  </TableCell>
-                  <TableCell className="py-5">
-                    <Badge variant="outline" className="rounded-lg font-bold border-primary/20 text-primary">
-                      {student.gpa}
-                    </Badge>
-                  </TableCell>
-                  <TableCell className="py-5">
-                    <Badge className={cn(
-                      "rounded-lg font-bold",
-                      student.status === 'Active' ? "bg-emerald-500/10 text-emerald-600 border-emerald-500/20" : "bg-amber-500/10 text-amber-600 border-amber-500/20"
-                    )}>
-                      {student.status}
-                    </Badge>
-                  </TableCell>
-                  <TableCell className="pe-8 py-5 text-end">
+                    </TableCell>
+                    <TableCell className="py-5">
+                      <span className="font-bold text-sm">{student.level || 'غير محدد'}</span>
+                    </TableCell>
+                    <TableCell className="py-5">
+                      <Badge variant="outline" className="rounded-lg font-bold border-primary/20 text-primary">
+                        {student.gpa || '0.0'}
+                      </Badge>
+                    </TableCell>
+                    <TableCell className="py-5">
+                      <Badge className={cn(
+                        "rounded-lg font-bold",
+                        student.status !== 'Inactive' ? "bg-emerald-500/10 text-emerald-600 border-emerald-500/20" : "bg-amber-500/10 text-amber-600 border-amber-500/20"
+                      )}>
+                        {student.status || 'Active'}
+                      </Badge>
+                    </TableCell>
+                    <TableCell className="pe-8 py-5 text-end">
                     <Button variant="ghost" size="icon" className="rounded-xl">
                       <MoreVertical className="size-4" />
                     </Button>
-                  </TableCell>
-                </TableRow>
-              ))}
+                    </TableCell>
+                  </TableRow>
+                ))
+              )}
             </TableBody>
           </Table>
         </CardContent>

@@ -10,12 +10,12 @@ export const loginOrSignup = async (req: Request, res: Response) => {
       where: { email },
       update: {
         name,
-        // أمنياً: لا يسمح للمستخدم بتغيير دوره بنفسه عند تسجيل الدخول
+        // لا يتم تحديث الـ role هنا لمنع تصعيد الصلاحيات يدوياً
       },
       create: {
         email,
         name,
-        role: role || 'STUDENT', // الدور الافتراضي طالب
+        role: role || 'STUDENT',
       },
     });
 
