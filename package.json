@@ -6,9 +6,10 @@
   "scripts": {
     "dev": "vite --port=3000 --host=0.0.0.0",
     "server:dev": "tsx watch server/index.ts",
+    "dev:all": "npm run dev & npm run server:dev",
     "build": "vite build",
     "preview": "vite preview",
-    "clean": "rm -rf dist",
+    "clean": "rm -rf dist node_modules",
     "lint": "tsc --noEmit"
   },
   "dependencies": {
